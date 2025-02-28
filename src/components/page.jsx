@@ -5,8 +5,8 @@ import Sidebar from "./sidebar";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { RiTicketLine } from "react-icons/ri";
 import { MdDelete } from "react-icons/md";
-import { BsWindowSidebar } from "react-icons/bs";
 import CreateUserModal from "./createModal";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const [node, setNode] = useState(null);
@@ -116,8 +116,13 @@ const Dashboard = () => {
           },
         }
       );
+      if(response.status!==200){
+        toast.success("User has been deleted successfully!")
+      }else{
+        toast.error("An error has occured!")
+      }
 
-      console.log("Row deletion successful:", response.data);
+      console.log("Row deletion successful:", response);
       setData((prevData) => prevData.filter((row) => row.key !== rowKeyToDelete));
       setNode((prevNode) => ({
         ...prevNode,
@@ -296,7 +301,6 @@ const Dashboard = () => {
                     <th className="py-3 px-4 text-left">Email</th>
                     <th className="py-3 px-4 text-left">Role</th>
                     <th className="py-3 px-4 text-left">Remove</th>
-
                   </tr>
                 </thead>
                 <tbody>
@@ -308,12 +312,11 @@ const Dashboard = () => {
                         <td className="py-3 px-4">{user?.name ? user?.name : "Null"}</td>
                         <td className="py-3 px-4">{user?.email ? user?.email : "Null"}</td>
                         <td className="py-3 px-4">{user?.role ? user?.role : "Null"}</td>
-                        <td onClick={() => deleteRow(user.key)} className="py-3 px-4 text-red-600 text-lg">
+                        <td onClick={() => deleteRow(user.key)} className="py-3 hover:cursor-pointer px-4 text-red-600 text-lg">
                           <MdDelete />
                         </td>
                       </tr>
                     ))}
-
                 </tbody>
               </table>
             </div>

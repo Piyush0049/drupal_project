@@ -108,10 +108,6 @@ const menuItems = [
     ],
   },
   {
-    title: "Professions",
-    items: [{ icon: <MdOutlineWork className="text-xl" />, label: "Professions" }],
-  },
-  {
     title: "Emails",
     items: [
       { icon: <AiOutlineMail className="text-xl" />, label: "Inbox" },
