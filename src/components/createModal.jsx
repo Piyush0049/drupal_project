@@ -15,11 +15,11 @@ const Modal = ({ isOpen, onClose, children }) => {
     >
       <div className="absolute bg-black opacity-70 inset-0" />
       <div
-        className="bg-gray-900 rounded-lg w-11/12 z-[1000] max-w-md p-5 relative shadow-lg"
+        className="bg-gray-900 w-11/12 z-[1000] max-w-md p-5 relative rounded-2xl shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-2 right-2 text-2xl text-gray-200 hover:text-gray-700"
+          className="absolute top-2 right-2 text-2xl  rounded-2xl text-gray-200 hover:text-gray-700"
           onClick={onClose}
         >
           &times;
@@ -60,8 +60,19 @@ const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
       const node = getResponse.data.data[0];
       const nodeId = node.id;
       let existingTable = node.attributes.field_mydata?.value || {};
+  
+      const duplicate = Object.values(existingTable).find(entry => {
+        return entry["1"] === formData.name || entry["2"] === formData.email;
+      });
+      
+      if (duplicate) {
+        toast.error("Username or Email already exists!");
+        throw new Error("Duplicate user found");
+      }
+  
       const newKey = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
-      console.log(formData)
+      console.log(formData);
+      
       existingTable[newKey] = {
         "0": newKey,
         "1": formData.name,
@@ -69,7 +80,7 @@ const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
         "3": formData.role,
         "weight": 0
       };
-
+  
       const payload = {
         data: {
           type: 'node--mydata',
@@ -81,24 +92,25 @@ const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
           }
         }
       };
-
+  
       const patchUrl = `${baseUrl}/jsonapi/node/mydata/${nodeId}`;
       const patchResponse = await axios.patch(patchUrl, payload, {
         headers: { 'Content-Type': 'application/vnd.api+json' }
       });
       
       if (patchResponse.status === 200) {
-        toast.success("User has been added successfully!")
+        toast.success("User has been added successfully!");
       } else {
-        toast.error("Error has occured!")
+        toast.error("An error occurred while adding the user!");
       }
-
+  
       return patchResponse.data;
     } catch (err) {
       console.error('Error updating node:', err.response || err);
       throw err;
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -157,7 +169,7 @@ const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
               value={formData.role}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 bg-gray-900 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full p-3 border border-gray-300 ${formData.role==="Select a role" && "text-gray-500"} bg-gray-900 rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
             >
               <option value="">Select a role</option>
               <option value="Administrator">Administrator</option>

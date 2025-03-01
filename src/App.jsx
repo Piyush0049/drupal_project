@@ -1,12 +1,30 @@
+// App.jsx
 import React from "react";
-import Dashboard2 from "./components/page";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Dashboard from "./pages/dashboard";
+import LoginPage from "./pages/login";
+import SignupPage from "./pages/signup";
+import ProtectedRoute from "./components/ProtectedDashRoute";
 import "./index.css";
 
 function App() {
   return (
-    <div className="min-h-screen w-screen">
-      <Dashboard2 />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={
+          <ProtectedRoute><LoginPage /></ProtectedRoute>} />
+        <Route path="/signup" element={<ProtectedRoute><SignupPage /></ProtectedRoute>} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
   );
 }
 

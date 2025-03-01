@@ -1,25 +1,36 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  AiOutlineUser,
-  AiOutlineMail,
-  AiOutlinePlusCircle,
-  AiOutlineBarChart,
+import axios from "axios";
+import { 
+  AiOutlineUser, 
+  AiOutlineMail, 
+  AiOutlinePlusCircle, 
+  AiOutlineBarChart, 
+  AiOutlineLogout 
 } from "react-icons/ai";
-import { MdOutlineWork } from "react-icons/md";
 import { FaAngleRight } from "react-icons/fa";
 
 const Sidebar = ({ showCreateModal, setShowCreateModal }) => {
   const [active, setActive] = useState("Dashboard");
 
-  // Custom handler for clicking on menu items.
   const handleItemClick = (item) => {
     if (item.label === "Add New User") {
-      // For Add New User, open the create modal.
       setShowCreateModal(true);
+    } else if (item.label === "Logout") {
+      handleLogout();
     } else {
-      // Otherwise, update the active menu item.
       setActive(item.label);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      
+      await axios.delete("http://localhost:5000/api/auth/logout", { withCredentials: true })
+      // Redirect or refresh page after logout
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   };
 
@@ -71,6 +82,7 @@ const Sidebar = ({ showCreateModal, setShowCreateModal }) => {
           ))}
         </nav>
       </motion.aside>
+
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -109,9 +121,11 @@ const menuItems = [
   },
   {
     title: "Emails",
-    items: [
-      { icon: <AiOutlineMail className="text-xl" />, label: "Inbox" },
-    ],
+    items: [{ icon: <AiOutlineMail className="text-xl" />, label: "Inbox" }],
+  },
+  {
+    title: "Settings",
+    items: [{ icon: <AiOutlineLogout className="text-xl text-red-50" />, label: "Logout" }],
   },
 ];
 
@@ -120,6 +134,7 @@ const bottomNavItems = [
   { icon: <AiOutlinePlusCircle className="text-2xl" />, label: "Add New User" },
   { icon: <AiOutlineUser className="text-2xl" />, label: "All Users" },
   { icon: <AiOutlineMail className="text-2xl" />, label: "Inbox" },
+  { icon: <AiOutlineLogout className="text-2xl text-red-400" />, label: "Logout" },
 ];
 
 export default Sidebar;

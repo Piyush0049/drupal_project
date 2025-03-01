@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, CartesianGrid } from "recharts";
-import Sidebar from "./sidebar";
+import Sidebar from "../components/Sidebar";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { RiTicketLine } from "react-icons/ri";
 import { MdDelete } from "react-icons/md";
-import CreateUserModal from "./createModal";
+import CreateUserModal from "../components/CreateModal";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
@@ -20,9 +20,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const baseUrl = import.meta.env.VITE_API_URL;
+      const dataTableID = import.meta.env.VITE_API_DATATABLEID;
       try {
-        const response = await axios.get("http://localhost/jsonapi/node/mydata");
-        const rawData = response.data.data[0].attributes.field_mydata.value;
+        const getUrl = `${baseUrl}/jsonapi/node/mydata/${dataTableID}`;
+        const response = await axios.get(getUrl);
+        
+        console.log(response)
+        const rawData = response.data.data.attributes.field_mydata.value;
         if (!rawData || typeof rawData !== "object") return;
         const userArray = Object.keys(rawData)
           .filter((key) => key !== "0")
@@ -31,8 +36,8 @@ const Dashboard = () => {
             name: rawData[key]["1"],
             email: rawData[key]["2"],
             role: rawData[key]["3"],
-
           }));
+          
         const nodeData = response.data.data[0];
         setNode(nodeData);
         const rows = Object.keys(rawData).map((key) => ({
@@ -108,7 +113,8 @@ const Dashboard = () => {
         },
       };
       const response = await axios.patch(
-        `http://localhost/jsonapi/node/mydata/${node.id}`,
+        `${baseUrl}/jsonapi/node/mydata/${dataTableID}`,
+        // `http://localhost/jsonapi/node/mydata/${node.id}`,
         payload,
         {
           headers: {
@@ -137,7 +143,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className=" w-full bg-gray-950 text-gray-400 font-sans">
+    <div className="min-h-screen w-screen bg-gray-950 text-gray-400 font-sans">
       <CreateUserModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
