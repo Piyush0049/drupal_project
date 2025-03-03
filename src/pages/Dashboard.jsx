@@ -17,29 +17,31 @@ const Dashboard = () => {
   const [areaData, setAreaData] = useState([]);
   const [radarData, setRadarData] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const dataTableID = import.meta.env.VITE_API_DATATABLEID;
 
   useEffect(() => {
     const fetchData = async () => {
-      const baseUrl = import.meta.env.VITE_API_URL;
-      const dataTableID = import.meta.env.VITE_API_DATATABLEID;
       try {
         const getUrl = `${baseUrl}/jsonapi/node/mydata/${dataTableID}`;
         const response = await axios.get(getUrl);
-        
+        console.log(response.data)
+
         console.log(response)
         const rawData = response.data.data.attributes.field_mydata.value;
         if (!rawData || typeof rawData !== "object") return;
         const userArray = Object.keys(rawData)
-          .filter((key) => key !== "0")
+          .filter((key) => key !== "0" && key!=="sample")
           .map((key) => ({
             uid: rawData[key]["0"],
             name: rawData[key]["1"],
             email: rawData[key]["2"],
             role: rawData[key]["3"],
           }));
-          
-        const nodeData = response.data.data[0];
+        console.log(response.data)
+        const nodeData = response.data.data;
         setNode(nodeData);
+        console.log(nodeData)
         const rows = Object.keys(rawData).map((key) => ({
           key,
           uid: rawData[key]["0"],
@@ -90,9 +92,15 @@ const Dashboard = () => {
     if (!window.confirm("Do you really want to delete the user?")) {
       return;
     }
-    if (!node) return;
-
+    if (!node) {
+      console.log("Not Found!");
+      return;
+    }
+    
+    const baseUrl = import.meta.env.VITE_API_URL;
+    const dataTableID = import.meta.env.VITE_API_DATATABLEID;
     try {
+
       const rawData = { ...node.attributes.field_mydata.value };
       if (rawData[rowKeyToDelete]) {
         delete rawData[rowKeyToDelete];
@@ -101,10 +109,12 @@ const Dashboard = () => {
         return;
       }
 
+      console.log(rawData)
+
       const payload = {
         data: {
           type: node.type,
-          id: node.id,
+          id: dataTableID,
           attributes: {
             field_mydata: {
               value: rawData,
@@ -112,9 +122,10 @@ const Dashboard = () => {
           },
         },
       };
+
+      console.log(payload)
       const response = await axios.patch(
         `${baseUrl}/jsonapi/node/mydata/${dataTableID}`,
-        // `http://localhost/jsonapi/node/mydata/${node.id}`,
         payload,
         {
           headers: {
@@ -122,9 +133,9 @@ const Dashboard = () => {
           },
         }
       );
-      if(response.status!==200){
+      if (response.status === 200) {
         toast.success("User has been deleted successfully!")
-      }else{
+      } else {
         toast.error("An error has occured!")
       }
 
@@ -311,7 +322,7 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   {data
-                    .filter((user) => (user?.uid) !== "uid")
+                    .filter((user) => (user?.uid) !== "uid" && (user?.uid) !== "sample")
                     .map((user, index) => (
                       <tr key={index} className="border-b border-gray-700 hover:bg-[#3A3E58] transition">
                         <td className="py-3 px-4">{user?.uid}</td>

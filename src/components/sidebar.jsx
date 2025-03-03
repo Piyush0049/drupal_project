@@ -27,7 +27,6 @@ const Sidebar = ({ showCreateModal, setShowCreateModal }) => {
     try {
       
       await axios.delete("http://localhost:5000/api/auth/logout", { withCredentials: true })
-      // Redirect or refresh page after logout
       window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
