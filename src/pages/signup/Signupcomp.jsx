@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const SignupPage = () => {
+const SignupPageComponent = ({setIsVerify, isVerify }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,7 +81,7 @@ const SignupPage = () => {
       if (responseData.data.success) {
         toast.success(responseData.data.message);
         localStorage.setItem("email", data.email);
-        navigate("/login")
+        setIsVerify(true);
       } else {
         toast.error(responseData.data.message);
       }
@@ -95,8 +95,11 @@ const SignupPage = () => {
 
   return (
     <div
-      className="min-h-screen w-screen flex font-poppins justify-center bg-gradient-to-br from-gray-800 via-gray-950 to-gray-800 text-white relative bg-cover bg-center"
+      className="min-h-screen w-full flex font-poppins justify-center bg-gradient-to-br from-gray-800 via-gray-950 to-gray-800 text-white relative bg-cover bg-center"
     >
+      <div className="absolute w-40 h-40 bg-pink-500 blur-3xl opacity-20 rounded-full top-10 left-10 animate-pulse"></div>
+      <div className="absolute w-40 h-40 bg-purple-500 blur-3xl opacity-20 rounded-full bottom-20 right-10 animate-pulse"></div>
+      <div className="absolute w-40 h-40 bg-purple-500 blur-3xl opacity-20 rounded-full bottom-40 left-40 animate-pulse"></div>
       <div className="flex w-auto min-w-[80%] sm:min-w-[60%] lg:min-w-0 lg:w-[40%] justify-center items-center bg-transparent px-[0px] lg:pl-10 py-10 bg-opacity-80 relative z-10">
         <div className="w-full lg:max-w-[83%] xl:max-w-[63%] space-y-8">
           <div>
@@ -233,4 +236,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default SignupPageComponent;

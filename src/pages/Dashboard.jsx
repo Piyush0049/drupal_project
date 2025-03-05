@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, CartesianGrid } from "recharts";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/sidebar";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { RiTicketLine } from "react-icons/ri";
 import { MdDelete } from "react-icons/md";
-import CreateUserModal from "../components/CreateModal";
+import CreateUserModal from "../components/createModal";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
@@ -26,12 +26,11 @@ const Dashboard = () => {
         const getUrl = `${baseUrl}/jsonapi/node/mydata/${dataTableID}`;
         const response = await axios.get(getUrl);
         console.log(response.data)
-
         console.log(response)
         const rawData = response.data.data.attributes.field_mydata.value;
         if (!rawData || typeof rawData !== "object") return;
         const userArray = Object.keys(rawData)
-          .filter((key) => key !== "0" && key!=="sample")
+          .filter((key) => key !== "0" && key !== "sample")
           .map((key) => ({
             uid: rawData[key]["0"],
             name: rawData[key]["1"],
@@ -96,7 +95,7 @@ const Dashboard = () => {
       console.log("Not Found!");
       return;
     }
-    
+
     const baseUrl = import.meta.env.VITE_API_URL;
     const dataTableID = import.meta.env.VITE_API_DATATABLEID;
     try {
@@ -154,7 +153,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-gray-950 text-gray-400 font-sans">
+    <div className="min-h-screen w-full bg-gray-950 text-gray-400 font-sans">
       <CreateUserModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -322,18 +321,27 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   {data
-                    .filter((user) => (user?.uid) !== "uid" && (user?.uid) !== "sample")
-                    .map((user, index) => (
-                      <tr key={index} className="border-b border-gray-700 hover:bg-[#3A3E58] transition">
-                        <td className="py-3 px-4">{user?.uid}</td>
-                        <td className="py-3 px-4">{user?.name ? user?.name : "Null"}</td>
-                        <td className="py-3 px-4">{user?.email ? user?.email : "Null"}</td>
-                        <td className="py-3 px-4">{user?.role ? user?.role : "Null"}</td>
-                        <td onClick={() => deleteRow(user.key)} className="py-3 hover:cursor-pointer px-4 text-red-600 text-lg">
-                          <MdDelete />
-                        </td>
-                      </tr>
-                    ))}
+                    .filter((user) => user?.uid !== "uid" && user?.uid !== "sample")
+                    .length > 0 ? (
+                    data
+                      .filter((user) => user?.uid !== "uid" && user?.uid !== "sample")
+                      .map((user, index) => (
+                        <tr key={index} className="border-b border-gray-700 hover:bg-[#3A3E58] transition">
+                          <td className="py-3 px-4">{user?.uid}</td>
+                          <td className="py-3 px-4">{user?.name ? user?.name : "Null"}</td>
+                          <td className="py-3 px-4">{user?.email ? user?.email : "Null"}</td>
+                          <td className="py-3 px-4">{user?.role ? user?.role : "Null"}</td>
+                          <td onClick={() => deleteRow(user.key)} className="py-3 hover:cursor-pointer px-4 text-red-600 text-lg">
+                            <MdDelete />
+                          </td>
+                        </tr>
+                      ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="py-3 px-4 text-center text-gray-400">Data is empty!</td>
+                    </tr>
+                  )}
+
                 </tbody>
               </table>
             </div>

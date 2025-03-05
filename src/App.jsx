@@ -3,7 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import LoginPage from "./pages/login";
-import SignupPage from "./pages/signup";
+import SignupPage from "./pages/signup/Signup";
 import ProtectedRoute from "./components/ProtectedDashRoute";
 import "./index.css";
 
